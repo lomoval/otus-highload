@@ -16,16 +16,32 @@
   <br />
   <br />
   <center>
-  Users
+  <a href="?offset={{.Paging.Previous.Offset}}&limit={{.Paging.Previous.Limit}}"><--</a> Users  <a href="?offset={{.Paging.Next.Offset}}&limit={{.Paging.Next.Limit}}">--></a>
+  <br/>
+  Searching:
+  <form method="GET" action="users" target="_self">
+    <fieldset>
+      <br>
+      <label for="name">Name:</label><br>
+      <input required type="text" name="searchName" value="{{.SearchName}}"></input><br>
+      <label for="surname">Surname:</label><br>
+      <input required type="text" name="searchSurname" value="{{.SearchSurname}}"></input><br>
+      <input type="hidden" name="offset" value="0" />
+      <input type="hidden" name="limit" value="100000" />
+      <input type="submit" value="Find">
+    </fieldset>
+  </form>
+
   <table style="border-collapse: collapse; width: 80%;" border="1">
   <tbody>
     <tr>
+      <th>Id</th>
       <th><b>User</b></th>
       <th></th>
       <th></th>
     {{range $user := .Users}}
     <tr>
-
+        <td>{{$user.Id}}</td>
         <td style="width:65%;">{{$user.Name}} {{$user.Surname}}</td>
         <td><a href="profile/?id={{$user.Id}}">Profile</a></td>
         <td><form method="POST" action="users"  target="_self"><input type="hidden" name="friend_id" value="{{$user.Id}}"/><input type="submit" value="Add to friends"></form></td>

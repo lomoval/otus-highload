@@ -11,7 +11,12 @@ type FriendsController struct {
 
 func (c *FriendsController) Get() {
 	u := c.user()
-	friends, err := service.Friends(*u)
+	paging, err := getPageParameters(&c.Base.Controller)
+	if err != nil {
+		log.Err(err).Msg("incorrect paging parameters")
+		c.AbortBadRequest()
+	}
+	friends, err := service.Friends(*u, paging.Limit, paging.Offset)
 
 	c.TplName = "friends.tpl"
 	if err != nil {
@@ -19,6 +24,7 @@ func (c *FriendsController) Get() {
 		return
 	}
 	c.Data["Users"] = friends
+	c.Data["Paging"] = paging
 }
 
 func (c *FriendsController) Post() {

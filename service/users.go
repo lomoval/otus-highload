@@ -119,7 +119,7 @@ func GetUserLoginInfo(login string, password string) (*models.User, error) {
 	return nil, nil
 }
 
-func Friends(user models.User) ([]orm.Params, error) {
+func Friends(user models.User, limit int, offset int) ([]orm.Params, error) {
 	o := orm.NewOrm()
 	var maps []orm.Params
 	_, err := o.Raw(`
@@ -130,15 +130,15 @@ JOIN (
 	UNION
 	SELECT user_id_2 AS id FROM friend f WHERE user_id_1 = ?
 ) f ON u.id = f.id
-JOIN profile p ON p.user_id = u.id`, user.Id, user.Id).
-		Values(&maps)
+JOIN profile p ON p.user_id = u.id
+LIMIT ? OFFSET ?`, user.Id, user.Id, limit, offset).Values(&maps)
 	if err != nil {
 		return nil, err
 	}
 	return maps, nil
 }
 
-func Users(user models.User) ([]orm.Params, error) {
+func Users(user models.User, limit int, offset int) ([]orm.Params, error) {
 	o := orm.NewOrm()
 
 	var maps []orm.Params
@@ -152,8 +152,32 @@ SELECT user_id_1 AS id FROM friend f WHERE user_id_2 = ?
 	UNION
 	SELECT user_id_2 AS id FROM friend f WHERE user_id_1 = ?
 )
-`,
-		user.Id, user.Id, user.Id).Values(&maps)
+LIMIT ? OFFSET ?`,
+		user.Id, user.Id, user.Id, limit, offset).Values(&maps)
+
+	if err != nil {
+		return nil, err
+	}
+	return maps, nil
+}
+
+func FindUsers(user models.User, limit int, offset int, name string, surname string) ([]orm.Params, error) {
+	o := orm.NewOrm()
+
+	var maps []orm.Params
+	_, err := o.Raw(`
+SELECT u.id AS Id, p.name AS Name, p.surname AS Surname 
+FROM user u
+JOIN profile p ON p.user_id = u.id
+WHERE u.id <> ?
+AND p.Name LIKE ? AND p.Surname LIKE ? 
+AND u.id NOT IN (
+SELECT user_id_1 AS id FROM friend f WHERE user_id_2 = ?
+	UNION
+	SELECT user_id_2 AS id FROM friend f WHERE user_id_1 = ?
+)
+ORDER BY u.Id ASC LIMIT ? OFFSET ?`,
+		user.Id, name+"%", surname+"%", user.Id, user.Id, limit, offset).Values(&maps)
 
 	if err != nil {
 		return nil, err

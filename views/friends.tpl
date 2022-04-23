@@ -16,15 +16,17 @@
   <br />
   <br />
   <center>
-    Friends
+    <a href="?offset={{.Paging.Previous.Offset}}&limit={{.Paging.Previous.Limit}}"><--</a> Friends  <a href="?offset={{.Paging.Next.Offset}}&limit={{.Paging.Next.Limit}}">--></a>
     <table style="border-collapse: collapse; width: 80%;" border="1">
       <tbody>
         <tr>
+          <th>Id</th>
           <th><b>User</b></th>
           <th></th>
           <th></th>
         {{range $user := .Users}}
         <tr>
+          <td>{{$user.Id}}</td>
           <td style="width:65%;">{{$user.Name}} {{$user.Surname}}</td>
           <td><a href="profile/?id={{$user.Id}}">Profile</a></td>
           <td><form method="POST" action="friends"  target="_self"><input type="hidden" name="friend_id" value="{{$user.Id}}"/><input type="submit" value="Remove from friends"></form></td>
