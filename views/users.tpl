@@ -18,7 +18,7 @@
   <center>
   <a href="?offset={{.Paging.Previous.Offset}}&limit={{.Paging.Previous.Limit}}"><--</a> Users  <a href="?offset={{.Paging.Next.Offset}}&limit={{.Paging.Next.Limit}}">--></a>
   <br/>
-  Searching:
+  Searching by names/surname:
   <form method="GET" action="users" target="_self">
     <fieldset>
       <br>
@@ -31,7 +31,19 @@
       <input type="submit" value="Find">
     </fieldset>
   </form>
-
+  <br />
+  Searching by interest:
+  <form method="GET" action="users" target="_self">
+      <fieldset>
+        <br>
+        <label for="name">Interest:</label><br>
+        <input required type="text" name="searchInterest" value="{{.SearchName}}"></input><br>
+        <input type="hidden" name="offset" value="0" />
+        <input type="hidden" name="limit" value="100000" />
+        <input type="submit" value="Find">
+      </fieldset>
+    </form>
+  <br />
   <table style="border-collapse: collapse; width: 80%;" border="1">
   <tbody>
     <tr>

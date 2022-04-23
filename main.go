@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "app/routers"
+	"app/service"
 	"fmt"
 	"github.com/beego/beego/v2/client/orm"
 	beego "github.com/beego/beego/v2/server/web"
@@ -10,6 +11,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+	"math/rand"
+	"os"
+	"strconv"
+	"time"
 
 	"net/http"
 	"strings"
@@ -22,11 +27,9 @@ const (
 	maxConn = 100
 )
 
-func setDBOptions(al *orm.DBOption) {
-
-}
-
 func init() {
+	rand.Seed(time.Now().UTC().UnixNano())
+
 	viper.SetEnvPrefix("OTUS_HIGHLOAD")
 	viper.BindEnv("DB_NAME")
 	viper.BindEnv("DB_HOST")
@@ -35,6 +38,7 @@ func init() {
 	viper.BindEnv("DB_PASS")
 	viper.BindEnv("DB_MAX_IDLE")
 	viper.BindEnv("DB_MAX_CONN")
+	viper.BindEnv("DB_SLAVES")
 
 	viper.SetDefault("DB_MAX_IDLE", maxIdle)
 	viper.SetDefault("DB_MAX_CONN", maxConn)
@@ -52,6 +56,32 @@ func init() {
 		orm.MaxIdleConnections(viper.GetInt("DB_MAX_IDLE")),
 		orm.MaxOpenConnections(viper.GetInt("DB_MAX_CONN")),
 	)
+
+	slavesString := viper.GetString("DB_SLAVES")
+	if slavesString != "" {
+		slaves := strings.Split(slavesString, ",")
+		service.SlavesCount = len(slaves)
+		for i, slave := range slaves {
+			parts := strings.SplitN(slave, ":", 2)
+			host := parts[0]
+			if len(parts) > 1 {
+				host += ":" + parts[1]
+			}
+			err := orm.RegisterDataBase("slave"+strconv.Itoa(i), "mysql",
+				fmt.Sprintf(
+					"%s:%s@tcp(%s)/%s?charset=utf8",
+					viper.Get("DB_USER"),
+					viper.Get("DB_PASS"),
+					host,
+					viper.Get("DB_NAME"),
+				),
+			)
+			if err != nil {
+				log.Err(err).Msgf("failed to init slave database")
+				os.Exit(1)
+			}
+		}
+	}
 
 	globalSessions, _ = session.NewManager("memory",
 		&session.ManagerConfig{

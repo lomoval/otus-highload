@@ -8,6 +8,8 @@ import (
 	"errors"
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/go-sql-driver/mysql"
+	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -19,6 +21,15 @@ const (
 
 	sqlErrCodeDuplicate = 1062
 )
+
+var SlavesCount = 0
+
+func getReadOrm() orm.Ormer {
+	if SlavesCount == 0 {
+		return orm.NewOrm()
+	}
+	return orm.NewOrmUsingDB("slave" + strconv.Itoa(rand.Intn(SlavesCount)))
+}
 
 func HashPassword(password string) string {
 	return hex.EncodeToString(sha256.New().Sum([]byte(password)))
@@ -162,7 +173,7 @@ LIMIT ? OFFSET ?`,
 }
 
 func FindUsers(user models.User, limit int, offset int, name string, surname string) ([]orm.Params, error) {
-	o := orm.NewOrm()
+	o := getReadOrm()
 
 	var maps []orm.Params
 	_, err := o.Raw(`
@@ -178,6 +189,31 @@ SELECT user_id_1 AS id FROM friend f WHERE user_id_2 = ?
 )
 ORDER BY u.Id ASC LIMIT ? OFFSET ?`,
 		user.Id, name+"%", surname+"%", user.Id, user.Id, limit, offset).Values(&maps)
+
+	if err != nil {
+		return nil, err
+	}
+	return maps, nil
+}
+
+func FindUsersByInterest(user models.User, limit int, offset int, interest string) ([]orm.Params, error) {
+	o := getReadOrm()
+
+	var maps []orm.Params
+	_, err := o.Raw(`
+SELECT u.id AS Id, p.name AS Name, p.surname AS Surname 
+FROM user u
+JOIN profile p ON p.user_id = u.id
+JOIN interest i ON i.user_id = u.id
+WHERE u.id <> ?
+AND i.Name = ? 
+AND u.id NOT IN (
+	SELECT user_id_1 AS id FROM friend f WHERE user_id_2 = ?
+	UNION
+	SELECT user_id_2 AS id FROM friend f WHERE user_id_1 = ?
+)
+ORDER BY u.Id ASC LIMIT ? OFFSET ?`,
+		user.Id, interest, user.Id, user.Id, limit, offset).Values(&maps)
 
 	if err != nil {
 		return nil, err

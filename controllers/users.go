@@ -24,11 +24,16 @@ func (c *UsersController) Get() {
 		c.AbortBadRequest()
 	}
 
+	interest := c.GetString("searchInterest")
+
 	var users []orm.Params
 	switch {
 	case name != "" && surname != "":
 		users, err = service.FindUsers(*u, paging.Limit, paging.Offset, name, surname)
 		log.Debug().Msgf("founded users'%d'", len(users))
+	case interest != "":
+		users, err = service.FindUsersByInterest(*u, paging.Limit, paging.Offset, interest)
+		log.Debug().Msgf("founded users by interest '%d'", len(users))
 	default:
 		users, err = service.Users(*u, paging.Limit, paging.Offset)
 	}
