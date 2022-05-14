@@ -36,7 +36,7 @@ func (m *User_20220319_102647) Up() {
 )`)
 
 	m.SQL(
-		`CREATE TABLE db.friend (
+		`CREATE TABLE friend (
 	id BIGINT auto_increment NOT NULL,
 	user_id_1 BIGINT NOT NULL,
 	user_id_2 BIGINT NOT NULL,
@@ -74,7 +74,7 @@ func (m *User_20220319_102647) Up() {
 
 	// Data
 	m.SQL(
-		`INSERT INTO db.sex (id,name) VALUES
+		`INSERT INTO sex (id,name) VALUES
 	 (1,'Male'),
 	 (2,'Female'),
 	 (3,'Don''t know');

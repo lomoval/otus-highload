@@ -10,6 +10,7 @@
   <td><a href="/friends">Friends</a></td>
   <td><a href="/users">Users</a></td>
   <td><a href="/profile">Profile</a></td>
+  <td><a href="/dialogs">Dialogs</a></td>
   <td><a href="/logout">Logout</a></td>
   </tr>
   </tbody>

@@ -15,4 +15,5 @@ func init() {
 	beego.Router("/logout", &controllers.LogoutController{})
 
 	beego.Include(&controllers.ProfileController{})
+	beego.Include(&controllers.DialogController{})
 }
