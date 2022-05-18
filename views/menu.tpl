@@ -11,6 +11,8 @@
   <td><a href="/users">Users</a></td>
   <td><a href="/profile">Profile</a></td>
   <td><a href="/dialogs">Dialogs</a></td>
+  <td><a href="/news">News</a></td>
+  <td><a href="/friends/news">Friends news</a></td>
   <td><a href="/logout">Logout</a></td>
   </tr>
   </tbody>

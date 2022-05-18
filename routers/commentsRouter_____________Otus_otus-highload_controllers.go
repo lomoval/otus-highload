@@ -27,6 +27,33 @@ func init() {
 			Filters: nil,
 			Params:  nil})
 
+	beego.GlobalControllerRouter["app/controllers:NewsController"] = append(beego.GlobalControllerRouter["app/controllers:NewsController"],
+		beego.ControllerComments{
+			Method:           "GetFriendsNews",
+			Router:           "/friends/news",
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["app/controllers:NewsController"] = append(beego.GlobalControllerRouter["app/controllers:NewsController"],
+		beego.ControllerComments{
+			Method:           "Get",
+			Router:           "/news",
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["app/controllers:NewsController"] = append(beego.GlobalControllerRouter["app/controllers:NewsController"],
+		beego.ControllerComments{
+			Method:           "Post",
+			Router:           "/news/",
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
 	beego.GlobalControllerRouter["app/controllers:ProfileController"] = append(beego.GlobalControllerRouter["app/controllers:ProfileController"],
 		beego.ControllerComments{
 			Method:           "AddDialog",

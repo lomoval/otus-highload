@@ -16,4 +16,5 @@ func init() {
 
 	beego.Include(&controllers.ProfileController{})
 	beego.Include(&controllers.DialogController{})
+	beego.Include(&controllers.NewsController{})
 }

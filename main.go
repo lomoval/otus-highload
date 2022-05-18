@@ -1,6 +1,7 @@
 package main
 
 import (
+	"app/models"
 	_ "app/routers"
 	"app/service"
 	"fmt"
@@ -39,6 +40,7 @@ func init() {
 	viper.BindEnv("DB_MAX_IDLE")
 	viper.BindEnv("DB_MAX_CONN")
 	viper.BindEnv("DB_SLAVES")
+	viper.BindEnv("KAFKA_BOOTSTRAPS_SERVERS")
 
 	viper.SetDefault("DB_MAX_IDLE", maxIdle)
 	viper.SetDefault("DB_MAX_CONN", maxConn)
@@ -94,9 +96,21 @@ func init() {
 			CookieLifeTime:  3600 * 10,
 		})
 	go globalSessions.GC()
+
+	err := service.StartNewsProducer(viper.GetString("KAFKA_BOOTSTRAPS_SERVERS"))
+	if err != nil {
+		log.Err(err).Msgf("failed to init Kafka news producer")
+		os.Exit(1)
+	}
+	err = service.StartNewsConsumer(viper.GetString("KAFKA_BOOTSTRAPS_SERVERS"))
+	if err != nil {
+		log.Err(err).Msgf("failed to init Kafka news consumer")
+		os.Exit(1)
+	}
 }
 
 func main() {
+	defer service.StopNewsProducer()
 	var FilterUser = func(ctx *context.Context) {
 		if strings.HasPrefix(ctx.Input.URL(), "/login") {
 			return
@@ -115,6 +129,7 @@ func main() {
 			return
 		}
 
+		service.SetActiveUser(logged.(models.User).Id, time.Hour*10)
 		log.Debug().Msgf("user is logged and go to %s", ctx.Input.URL())
 	}
 
