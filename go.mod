@@ -13,4 +13,5 @@ require (
 	github.com/rs/zerolog v1.26.1
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/viper v1.10.1
+	github.com/tarantool/go-tarantool v1.6.0 // indirect
 )

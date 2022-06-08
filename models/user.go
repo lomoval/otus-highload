@@ -3,27 +3,31 @@ package models
 import "time"
 
 type User struct {
-	Id        int64
+	Id        int64 `msgpack:"id"`
 	Login     string
-	Profile   Profile
-	Interests []Interest
+	Profile   Profile    `msgpack:"profile"`
+	Interests []Interest `msgpack:"interests"`
+}
+
+func (u User) Valid() bool {
+	return u.Id > 0
 }
 
 type Profile struct {
-	Id        int64
-	Name      string
-	Surname   string
-	BirthDate time.Time
-	City      string
-	Sex       Sex
+	Id        int64     `msgpack:"id"`
+	Name      string    `msgpack:"name"`
+	Surname   string    `msgpack:"surname"`
+	BirthDate time.Time `msgpack:"birth_date"`
+	City      string    `msgpack:"city"`
+	Sex       Sex       `msgpack:"sex"`
 }
 
 type Sex struct {
-	Id   int
-	Name string
+	Id   int    `msgpack:"id"`
+	Name string `msgpack:"name"`
 }
 
 type Interest struct {
-	Id   int
-	Name string
+	Id   int    `msgpack:"id"`
+	Name string `msgpack:"name"`
 }

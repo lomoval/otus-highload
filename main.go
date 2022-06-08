@@ -41,6 +41,20 @@ func init() {
 	viper.BindEnv("DB_MAX_CONN")
 	viper.BindEnv("DB_SLAVES")
 	viper.BindEnv("KAFKA_BOOTSTRAPS_SERVERS")
+	viper.BindEnv("TARANTOOL_SERVER")
+	viper.BindEnv("TARANTOOL_SERVER_USER")
+	viper.BindEnv("TARANTOOL_SERVER_PASS")
+
+	err := service.SetupTarantool(
+		viper.GetString("TARANTOOL_SERVER"),
+		viper.GetString("TARANTOOL_SERVER_USER"),
+		viper.GetString("TARANTOOL_SERVER_PASS"),
+	)
+
+	if err != nil {
+		log.Err(err).Msgf("failed to init tarantool")
+		os.Exit(1)
+	}
 
 	viper.SetDefault("DB_MAX_IDLE", maxIdle)
 	viper.SetDefault("DB_MAX_CONN", maxConn)
@@ -97,7 +111,7 @@ func init() {
 		})
 	go globalSessions.GC()
 
-	err := service.StartNewsProducer(viper.GetString("KAFKA_BOOTSTRAPS_SERVERS"))
+	err = service.StartNewsProducer(viper.GetString("KAFKA_BOOTSTRAPS_SERVERS"))
 	if err != nil {
 		log.Err(err).Msgf("failed to init Kafka news producer")
 		os.Exit(1)
@@ -111,6 +125,7 @@ func init() {
 
 func main() {
 	defer service.StopNewsProducer()
+	defer service.ShutdownTarantool()
 	var FilterUser = func(ctx *context.Context) {
 		if strings.HasPrefix(ctx.Input.URL(), "/login") {
 			return

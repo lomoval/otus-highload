@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"app/service"
+	"errors"
 	"github.com/rs/zerolog/log"
 )
 
@@ -15,10 +16,19 @@ func (c *ProfileController) Profile(id *int64) {
 	if id != nil {
 		userId = *id
 	}
-	u, err := service.Profile(userId)
-	if err != nil {
-		log.Err(err).Msgf("failed to get profile by id [%d]", id)
-		c.AbortInternalError()
+
+	u, err := service.ProfileFromTarantool(userId)
+	if err != nil && !errors.Is(err, service.ErrTarantoolNotAvailable) {
+		log.Err(err).Msgf("failed to get profile from tarantool")
+		u.Id = -1
+	}
+
+	if !u.Valid() {
+		u, err = service.Profile(userId)
+		if err != nil {
+			log.Err(err).Msgf("failed to get profile by id [%d]", id)
+			c.AbortInternalError()
+		}
 	}
 
 	c.Data["ReadOnly"] = userId != c.user().Id
