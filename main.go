@@ -44,6 +44,7 @@ func init() {
 	viper.BindEnv("TARANTOOL_SERVER")
 	viper.BindEnv("TARANTOOL_SERVER_USER")
 	viper.BindEnv("TARANTOOL_SERVER_PASS")
+	viper.BindEnv("RABBIT_URL")
 
 	err := service.SetupTarantool(
 		viper.GetString("TARANTOOL_SERVER"),
@@ -121,11 +122,18 @@ func init() {
 		log.Err(err).Msgf("failed to init Kafka news consumer")
 		os.Exit(1)
 	}
+	err = service.StartRabbit(viper.GetString("RABBIT_URL"))
+	if err != nil {
+		log.Err(err).Msgf("failed to init Rabbit news consumer")
+		os.Exit(1)
+	}
 }
 
 func main() {
 	defer service.StopNewsProducer()
 	defer service.ShutdownTarantool()
+	defer service.StopRabbit()
+
 	var FilterUser = func(ctx *context.Context) {
 		if strings.HasPrefix(ctx.Input.URL(), "/login") {
 			return

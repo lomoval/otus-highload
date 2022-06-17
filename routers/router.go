@@ -17,4 +17,7 @@ func init() {
 	beego.Include(&controllers.ProfileController{})
 	beego.Include(&controllers.DialogController{})
 	beego.Include(&controllers.NewsController{})
+
+	// WebSocket.
+	beego.Router("/news/subscription", &controllers.NewsSubscription{})
 }

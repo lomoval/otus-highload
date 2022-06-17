@@ -292,6 +292,21 @@ func ValidateProfileData(profile models.Profile) bool {
 		profile.Sex.Id > 3)
 }
 
+func FriendsIDs(id int64) ([]int64, error) {
+	o := getReadOrm()
+	var friendsIDs []int64
+	_, err := o.Raw(`
+SELECT user_id_1 AS id FROM friend f WHERE user_id_2 = ?
+UNION
+SELECT user_id_2 AS id FROM friend f WHERE user_id_1 = ?
+`, id, id).QueryRows(&friendsIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return friendsIDs, err
+}
+
 func friendsLinkIds(userID int64, friendID int64) (int64, int64) {
 	if userID > friendID {
 		return friendID, userID

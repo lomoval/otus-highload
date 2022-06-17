@@ -10,8 +10,10 @@ require (
 	github.com/confluentinc/confluent-kafka-go v1.8.2
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-zen-chu/time-sorted-list v0.0.0-20190720071234-c4f664a966ef
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/rs/zerolog v1.26.1
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/viper v1.10.1
+	github.com/streadway/amqp v1.0.0 // indirect
 	github.com/tarantool/go-tarantool v1.6.0 // indirect
 )

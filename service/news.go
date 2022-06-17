@@ -44,6 +44,7 @@ func AddNews(creatorID int64, text string) error {
 	}
 
 	SendNewsMessage(models.News{ID: id, Text: text, Creator: models.User{Id: creatorID}, Timestamp: t})
+	SendRabbitNewsMessage(creatorID, models.News{ID: id, Text: text, Creator: models.User{Id: creatorID}, Timestamp: t})
 	return nil
 }
 
