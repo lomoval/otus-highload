@@ -4,6 +4,7 @@ import (
 	"app/models"
 	_ "app/routers"
 	"app/service"
+	"encoding/gob"
 	"fmt"
 	"github.com/beego/beego/v2/client/orm"
 	beego "github.com/beego/beego/v2/server/web"
@@ -19,6 +20,9 @@ import (
 
 	"net/http"
 	"strings"
+
+	"github.com/beego/beego/v2/server/web"
+	_ "github.com/beego/beego/v2/server/web/session/mysql"
 )
 
 var globalSessions *session.Manager
@@ -56,6 +60,17 @@ func init() {
 		log.Err(err).Msgf("failed to init tarantool")
 		os.Exit(1)
 	}
+
+	gob.Register(models.User{})
+	web.BConfig.WebConfig.Session.SessionProvider = "mysql"
+	web.BConfig.WebConfig.Session.SessionProviderConfig = fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/%s?charset=utf8",
+		viper.Get("DB_USER"),
+		viper.Get("DB_PASS"),
+		viper.Get("DB_HOST"),
+		viper.Get("DB_PORT"),
+		viper.Get("DB_NAME"),
+	)
 
 	viper.SetDefault("DB_MAX_IDLE", maxIdle)
 	viper.SetDefault("DB_MAX_CONN", maxConn)

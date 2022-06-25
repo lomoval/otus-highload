@@ -222,7 +222,7 @@ ORDER BY u.Id ASC LIMIT ? OFFSET ?`,
 }
 
 func Profile(id int64) (models.User, error) {
-	o := orm.NewOrm()
+	o := getReadOrm()
 
 	var u models.User
 	err := o.Raw(`
