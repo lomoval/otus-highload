@@ -1,0 +1,40 @@
+2022/06/25 16:16:06 [notice] 2734#2734: using inherited sockets from "6;7;"
+2022/06/25 16:28:59 [emerg] 2857#2857: "upstream" directive is not allowed here in /etc/nginx/nginx.conf:6
+2022/06/25 16:31:43 [emerg] 2869#2869: "upstream" directive is not allowed here in /etc/nginx/nginx.conf:6
+2022/06/25 16:33:01 [emerg] 2879#2879: "upstream" directive is not allowed here in /etc/nginx/nginx.conf:60
+2022/06/25 17:19:28 [emerg] 3542#3542: "server" directive is not allowed here in /etc/nginx/sites-enabled/default:21
+2022/06/25 17:21:19 [emerg] 3552#3552: bind() to 0.0.0.0:9081 failed (98: Address already in use)
+2022/06/25 17:21:19 [emerg] 3552#3552: bind() to 0.0.0.0:9081 failed (98: Address already in use)
+2022/06/25 17:21:19 [emerg] 3552#3552: bind() to 0.0.0.0:9081 failed (98: Address already in use)
+2022/06/25 17:21:19 [emerg] 3552#3552: bind() to 0.0.0.0:9081 failed (98: Address already in use)
+2022/06/25 17:21:19 [emerg] 3552#3552: bind() to 0.0.0.0:9081 failed (98: Address already in use)
+2022/06/25 17:21:19 [emerg] 3552#3552: still could not bind()
+2022/06/25 17:22:02 [emerg] 3559#3559: bind() to 0.0.0.0:9081 failed (98: Address already in use)
+2022/06/25 17:22:02 [emerg] 3559#3559: bind() to 0.0.0.0:9081 failed (98: Address already in use)
+2022/06/25 17:22:02 [emerg] 3559#3559: bind() to 0.0.0.0:9081 failed (98: Address already in use)
+2022/06/25 17:22:02 [emerg] 3559#3559: bind() to 0.0.0.0:9081 failed (98: Address already in use)
+2022/06/25 17:22:02 [emerg] 3559#3559: bind() to 0.0.0.0:9081 failed (98: Address already in use)
+2022/06/25 17:22:02 [emerg] 3559#3559: still could not bind()
+2022/06/25 17:50:24 [error] 3567#3567: *36148 upstream prematurely closed connection while reading response header from upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=19 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=19", host: "127.0.0.1:9080"
+2022/06/25 17:50:35 [error] 3567#3567: *37315 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=4 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=4", host: "127.0.0.1:9080"
+2022/06/25 17:50:46 [error] 3567#3567: *37608 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=33 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=33", host: "127.0.0.1:9080"
+2022/06/25 17:50:57 [error] 3567#3567: *39225 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=10 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=10", host: "127.0.0.1:9080"
+2022/06/25 17:51:08 [error] 3567#3567: *40462 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=40 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=40", host: "127.0.0.1:9080"
+2022/06/25 17:51:19 [error] 3567#3567: *40029 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=32 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=32", host: "127.0.0.1:9080"
+2022/06/25 17:51:30 [error] 3567#3567: *42138 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=33 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=33", host: "127.0.0.1:9080"
+2022/06/25 17:51:41 [error] 3567#3567: *41331 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=23 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=23", host: "127.0.0.1:9080"
+2022/06/25 17:51:52 [error] 3567#3567: *42549 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=25 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=25", host: "127.0.0.1:9080"
+2022/06/25 17:52:03 [error] 3567#3567: *44594 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=19 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=19", host: "127.0.0.1:9080"
+2022/06/25 17:52:14 [error] 3567#3567: *45920 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=2 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=2", host: "127.0.0.1:9080"
+2022/06/25 17:52:25 [error] 3567#3567: *47371 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=31 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=31", host: "127.0.0.1:9080"
+2022/06/25 17:52:36 [error] 3567#3567: *48274 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=41 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=41", host: "127.0.0.1:9080"
+2022/06/25 17:52:47 [error] 3567#3567: *47935 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=7 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=7", host: "127.0.0.1:9080"
+2022/06/25 17:52:58 [error] 3567#3567: *49871 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=14 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=14", host: "127.0.0.1:9080"
+2022/06/25 17:53:09 [error] 3567#3567: *50253 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=2 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=2", host: "127.0.0.1:9080"
+2022/06/25 17:53:20 [error] 3567#3567: *52708 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=30 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=30", host: "127.0.0.1:9080"
+2022/06/25 17:53:31 [error] 3567#3567: *54164 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=9 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=9", host: "127.0.0.1:9080"
+2022/06/25 17:53:42 [error] 3567#3567: *54813 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=30 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=30", host: "127.0.0.1:9080"
+2022/06/25 17:53:53 [error] 3567#3567: *55771 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=38 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=38", host: "127.0.0.1:9080"
+2022/06/25 17:54:04 [error] 3567#3567: *56937 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=44 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=44", host: "127.0.0.1:9080"
+2022/06/25 17:54:15 [error] 3567#3567: *56937 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=45 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=45", host: "127.0.0.1:9080"
+2022/06/25 17:54:26 [error] 3567#3567: *59194 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /profile/?id=29 HTTP/1.1", upstream: "http://127.0.0.1:9082/profile/?id=29", host: "127.0.0.1:9080"
