@@ -1,0 +1,58 @@
+version: '3'
+services:
+  mysql-main:
+    image: mysql:latest
+    container_name: mysql-main
+    volumes:
+      - ./mysql-master/conf:/etc/mysql/conf.d
+      - ./mysql-master/init:/docker-entrypoint-initdb.d/
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    ports:
+      - "4306:3306"
+
+  mysql-slave1:
+    image: mysql:latest
+    container_name: mysql-slave1
+    volumes:
+      - ./mysql-slave1/conf:/etc/mysql/conf.d
+      - ./slave-init:/docker-entrypoint-initdb.d/
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    ports:
+      - "4307:3306"
+
+  mysql-slave2:
+    image: mysql:latest
+    container_name: mysql-slave2
+    volumes:
+      - ./mysql-slave2/conf:/etc/mysql/conf.d
+      - ./slave-init:/docker-entrypoint-initdb.d/
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    ports:
+      - "4308:3306"
+
+  mysql-slave3:
+    image: mysql:latest
+    container_name: mysql-slave3
+    volumes:
+      - ./mysql-slave3/conf:/etc/mysql/conf.d
+      - ./slave-init:/docker-entrypoint-initdb.d/
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    ports:
+      - "4309:3306"
+
+  haproxy:
+    image: haproxy:latest
+    container_name: haproxy
+    volumes:
+      - ./haproxy:/usr/local/etc/haproxy:ro
+    ports:
+      - "4400:4400"
+      - "4480:4480"
