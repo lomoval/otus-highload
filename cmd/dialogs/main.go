@@ -26,6 +26,7 @@ func init() {
 
 	viper.SetDefault("DIALOGS_HOST", "0.0.0.0")
 	viper.SetDefault("DIALOGS_PORT", 8005)
+	viper.BindEnv("ZIPKIN_URL")
 
 	orm.RegisterDataBase("default", "mysql",
 		fmt.Sprintf(
@@ -40,7 +41,7 @@ func init() {
 		orm.MaxOpenConnections(viper.GetInt("DB_MAX_CONN")),
 	)
 
-	server = internalgrpc.NewServer(viper.GetString("DIALOGS_HOST"), viper.GetInt("DIALOGS_PORT"))
+	server = internalgrpc.NewServer(viper.GetString("DIALOGS_HOST"), viper.GetInt("DIALOGS_PORT"), viper.GetString("ZIPKIN_URL"))
 }
 
 func main() {

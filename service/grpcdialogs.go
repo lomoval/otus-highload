@@ -9,6 +9,8 @@ import (
 	"context"
 	"errors"
 	"github.com/beego/beego/v2/client/orm"
+	"github.com/openzipkin/zipkin-go"
+	zipkingrpc "github.com/openzipkin/zipkin-go/middleware/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -21,11 +23,12 @@ var (
 	grpcDialogsClient api.DialogsClient
 )
 
-func SetupGrpcDialogs(host string, port int) error {
+func SetupGrpcDialogs(host string, port int, tracer *zipkin.Tracer) error {
 	var err error
 	grpcDialogsConn, err = grpc.Dial(
 		net.JoinHostPort(host, strconv.Itoa(port)),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithStatsHandler(zipkingrpc.NewClientHandler(tracer)),
 	)
 	if err != nil {
 		return err
@@ -45,8 +48,8 @@ func dialogsClient() api.DialogsClient {
 	return grpcDialogsClient
 }
 
-func Dialogs() ([]models.Dialog, error) {
-	resp, err := dialogsClient().Dialogs(context.Background(), &emptypb.Empty{})
+func Dialogs(ctx context.Context) ([]models.Dialog, error) {
+	resp, err := dialogsClient().Dialogs(ctx, &emptypb.Empty{})
 	if err != nil {
 		if errors.Is(err, orm.ErrNoRows) {
 			return nil, nil
@@ -61,8 +64,8 @@ func Dialogs() ([]models.Dialog, error) {
 	return dialogs, nil
 }
 
-func Dialog(id int64) (models.Dialog, error) {
-	resp, err := dialogsClient().Dialog(context.Background(), &api.DialogRequest{DialogId: id})
+func Dialog(ctx context.Context, id int64) (models.Dialog, error) {
+	resp, err := dialogsClient().Dialog(ctx, &api.DialogRequest{DialogId: id})
 	if err != nil {
 		return models.Dialog{}, err
 	}
@@ -73,13 +76,13 @@ func Dialog(id int64) (models.Dialog, error) {
 	}, nil
 }
 
-func AddDialog(creatorID int64, name string) error {
-	_, err := dialogsClient().AddDialog(context.Background(), &api.AddDialogRequest{CreatorId: creatorID, Name: name})
+func AddDialog(ctx context.Context, creatorID int64, name string) error {
+	_, err := dialogsClient().AddDialog(ctx, &api.AddDialogRequest{CreatorId: creatorID, Name: name})
 	return err
 }
 
-func DialogAnswers(dialogID int64) ([]models.DialogAnswer, error) {
-	resp, err := dialogsClient().DialogAnswers(context.Background(), &api.DialogAnswersRequest{DialogId: dialogID})
+func DialogAnswers(ctx context.Context, dialogID int64) ([]models.DialogAnswer, error) {
+	resp, err := dialogsClient().DialogAnswers(ctx, &api.DialogAnswersRequest{DialogId: dialogID})
 	if err != nil {
 		return nil, err
 	}
@@ -91,9 +94,9 @@ func DialogAnswers(dialogID int64) ([]models.DialogAnswer, error) {
 	return answers, nil
 }
 
-func AddDialogAnswer(dialogID int64, creatorID int64, text string) error {
+func AddDialogAnswer(ctx context.Context, dialogID int64, creatorID int64, text string) error {
 	_, err := dialogsClient().AddDialogAnswer(
-		context.Background(),
+		ctx,
 		&api.AddDialogAnswerRequest{CreatorId: creatorID, DialogId: dialogID, Text: text},
 	)
 	return err

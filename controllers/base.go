@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"app/models"
+	"context"
 	beego "github.com/beego/beego/v2/server/web"
 	"net/http"
 	"strconv"
@@ -19,6 +20,10 @@ const (
 
 type Base struct {
 	beego.Controller
+}
+
+func (c Base) ReqCtx() context.Context {
+	return c.Ctx.Request.Context()
 }
 
 func (c *Base) userToSession(user models.User) {

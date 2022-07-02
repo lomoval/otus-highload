@@ -5,11 +5,12 @@ package service
 
 import (
 	"app/models"
+	"context"
 	"errors"
 	"github.com/beego/beego/v2/client/orm"
 )
 
-func Dialogs() ([]models.Dialog, error) {
+func Dialogs(_ context.Context) ([]models.Dialog, error) {
 	o := getReadOrm()
 
 	var ids []int64
@@ -32,7 +33,7 @@ func Dialogs() ([]models.Dialog, error) {
 	return dialogs, nil
 }
 
-func Dialog(id int64) (models.Dialog, error) {
+func Dialog(_ context.Context, id int64) (models.Dialog, error) {
 	o := getReadOrm()
 
 	var dialog models.Dialog
@@ -49,12 +50,12 @@ func Dialog(id int64) (models.Dialog, error) {
 	return dialog, nil
 }
 
-func AddDialog(creatorID int64, name string) error {
+func AddDialog(_ context.Context, creatorID int64, name string) error {
 	_, err := orm.NewOrm().Raw("INSERT INTO dialog(creator_id, name) VALUES(?, ?) ", creatorID, name).Exec()
 	return err
 }
 
-func DialogAnswers(dialogID int64) ([]models.DialogAnswer, error) {
+func DialogAnswers(_ context.Context, dialogID int64) ([]models.DialogAnswer, error) {
 	o := getReadOrm()
 
 	var ids []int64
@@ -77,7 +78,7 @@ func DialogAnswers(dialogID int64) ([]models.DialogAnswer, error) {
 	return answers, nil
 }
 
-func AddDialogAnswer(dialogID int64, creatorID int64, text string) error {
+func AddDialogAnswer(_ context.Context, dialogID int64, creatorID int64, text string) error {
 	_, err := orm.NewOrm().Raw("INSERT INTO dialog_answer(dialog_id, creator_id, text) VALUES(?, ?, ?) ",
 		dialogID, creatorID, text).Exec()
 	return err

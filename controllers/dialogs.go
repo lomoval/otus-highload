@@ -13,7 +13,7 @@ type DialogController struct {
 
 // @router /dialogs [get]
 func (c *DialogController) Dialogs() {
-	dialogs, err := service.Dialogs()
+	dialogs, err := service.Dialogs(c.ReqCtx())
 	if err != nil {
 		log.Err(err).Msgf("failed to get dialogs")
 		c.AbortInternalError()
@@ -31,7 +31,7 @@ func (c *ProfileController) AddDialog() {
 		c.AbortBadRequest()
 		return
 	}
-	err := service.AddDialog(c.user().Id, text)
+	err := service.AddDialog(c.ReqCtx(), c.user().Id, text)
 	if err != nil {
 		log.Err(err).Msgf("failed to add dialog")
 		c.AbortInternalError()
@@ -42,13 +42,13 @@ func (c *ProfileController) AddDialog() {
 
 // @router /dialogs/:id [get]
 func (c *DialogController) DialogAnswers(id int64) {
-	dialog, err := service.Dialog(id)
+	dialog, err := service.Dialog(c.ReqCtx(), id)
 	if err != nil {
 		log.Err(err).Msgf("failed to get dialog '%d' answers", id)
 		c.AbortInternalError()
 	}
 
-	answers, err := service.DialogAnswers(id)
+	answers, err := service.DialogAnswers(c.ReqCtx(), id)
 	if err != nil {
 		log.Err(err).Msgf("failed to get dialog '%d' answers", id)
 		c.AbortInternalError()
@@ -67,7 +67,7 @@ func (c *ProfileController) AddDialogAnswer(id int64) {
 		c.AbortBadRequest()
 		return
 	}
-	err := service.AddDialogAnswer(id, c.user().Id, text)
+	err := service.AddDialogAnswer(c.ReqCtx(), id, c.user().Id, text)
 	if err != nil {
 		log.Err(err).Msgf("failed to add dialog answer")
 		c.AbortInternalError()

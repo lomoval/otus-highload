@@ -15,6 +15,9 @@ import (
 	"github.com/beego/beego/v2/server/web/context"
 	"github.com/beego/beego/v2/server/web/session"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/openzipkin/zipkin-go"
+	zipkinhttp "github.com/openzipkin/zipkin-go/middleware/http"
+	zipkinreporter "github.com/openzipkin/zipkin-go/reporter/http"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"math/rand"
@@ -30,6 +33,7 @@ import (
 )
 
 var globalSessions *session.Manager
+var zipkinTracer *zipkin.Tracer
 
 const (
 	maxIdle = 50
@@ -55,6 +59,7 @@ func init() {
 	viper.BindEnv("RABBIT_URL")
 	viper.BindEnv("DIALOGS_HOST")
 	viper.BindEnv("DIALOGS_PORT")
+	viper.BindEnv("ZIPKIN_URL")
 
 	err := service.SetupTarantool(
 		viper.GetString("TARANTOOL_SERVER"),
@@ -133,7 +138,13 @@ func init() {
 		})
 	go globalSessions.GC()
 
-	err = service.SetupGrpcDialogs(viper.GetString("DIALOGS_HOST"), viper.GetInt("DIALOGS_PORT"))
+	reporter := zipkinreporter.NewReporter(viper.GetString("ZIPKIN_URL"))
+	zipkinTracer, err = zipkin.NewTracer(reporter)
+	if err != nil {
+		log.Err(err).Msgf("failed to init zipkin")
+		os.Exit(1)
+	}
+	err = service.SetupGrpcDialogs(viper.GetString("DIALOGS_HOST"), viper.GetInt("DIALOGS_PORT"), zipkinTracer)
 	if err != nil {
 		log.Err(err).Msgf("failed to init dialogs service")
 		os.Exit(1)
@@ -159,6 +170,7 @@ func main() {
 	defer service.StopNewsProducer()
 	defer service.ShutdownTarantool()
 	defer service.StopRabbit()
+	defer service.StopGrpcDialogs()
 
 	var FilterUser = func(ctx *context.Context) {
 		if strings.HasPrefix(ctx.Input.URL(), "/login") {
@@ -183,5 +195,11 @@ func main() {
 	}
 
 	beego.InsertFilter("/*", beego.BeforeRouter, FilterUser)
-	beego.Run()
+
+	serverMiddleware := zipkinhttp.NewServerMiddleware(
+		zipkinTracer,
+		zipkinhttp.TagResponseSize(true),
+		zipkinhttp.SpanName("http-request"),
+	)
+	beego.RunWithMiddleWares("", serverMiddleware)
 }
