@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+import "dialog.proto";
+
+package dialogsv1;
+
+option go_package = "./;api";
+
+service Dialogs {
+ rpc Dialogs(google.protobuf.Empty) returns (DialogsResponse){};
+ rpc Dialog(DialogRequest) returns (DialogResponse){};
+ rpc AddDialog(AddDialogRequest) returns (google.protobuf.Empty){};
+ rpc DialogAnswers(DialogAnswersRequest) returns (DialogAnswersResponse){};
+ rpc AddDialogAnswer(AddDialogAnswerRequest) returns (google.protobuf.Empty){};
+}
+
+message DialogsResponse {
+ repeated dialog.Dialog dialogs = 1;
+}
+
+message DialogRequest {
+ int64 dialogId = 1;
+}
+
+message DialogResponse {
+ dialog.Dialog dialog = 1;
+}
+
+message AddDialogRequest {
+ int64 creatorId = 1;
+ string name = 2;
+}
+
+message DialogAnswersRequest {
+ int64 dialogId = 1;
+}
+
+message DialogAnswersResponse {
+ repeated dialog.DialogAnswer answers = 1;
+}
+
+message AddDialogAnswerRequest {
+ int64 dialogId = 1;
+ int64 creatorId = 2;
+ string text = 3;
+}

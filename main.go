@@ -1,3 +1,7 @@
+//go:generate -command PROTOC protoc -I./api/proto ./api/proto/dialog.proto ./api/proto/dialog-service.proto
+//go:generate PROTOC --go_out=./api/ --go-grpc_out=./api/
+// :generate PROTOC --grpc-gateway_out ../../../api/ --grpc-gateway_opt logtostderr=true --grpc-gateway_opt paths=source_relative --grpc-gateway_opt generate_unbound_methods=true
+
 package main
 
 import (
