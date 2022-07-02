@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+import "dialogv2.proto";
+
+package dialogsv2;
+
+option go_package = "./;apiv2";
+
+service Dialogs {
+ rpc Dialogs(google.protobuf.Empty) returns (DialogsResponse){};
+}
+
+message DialogsResponse {
+ repeated dialogv2.Dialog dialogs = 1;
+}

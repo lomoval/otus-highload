@@ -2,6 +2,7 @@ package internalgrpc
 
 import (
 	"app/api"
+	"app/apiv2"
 	"app/service"
 	"context"
 	"github.com/openzipkin/zipkin-go"
@@ -26,10 +27,20 @@ type Dialogs struct {
 	api.UnimplementedDialogsServer
 	zipkinUrl string
 	tracer    *zipkin.Tracer
+	v2        *DialogsV2
+}
+
+type DialogsV2 struct {
+	grpcServer *grpc.Server
+	addr       string
+	apiv2.UnimplementedDialogsServer
+	zipkinUrl string
+	tracer    *zipkin.Tracer
 }
 
 func NewServer(host string, port int, zipkinUrl string) *Dialogs {
-	return &Dialogs{addr: net.JoinHostPort(host, strconv.Itoa(port)), zipkinUrl: zipkinUrl}
+	return &Dialogs{addr: net.JoinHostPort(host, strconv.Itoa(port)), zipkinUrl: zipkinUrl,
+		v2: &DialogsV2{addr: net.JoinHostPort(host, strconv.Itoa(port)), zipkinUrl: zipkinUrl}}
 }
 
 func (s *Dialogs) Start(_ context.Context) error {
@@ -37,6 +48,7 @@ func (s *Dialogs) Start(_ context.Context) error {
 	s.tracer, _ = zipkin.NewTracer(reporter)
 	s.grpcServer = grpc.NewServer(grpc.UnaryInterceptor(loggingHandler), grpc.StatsHandler(zipkingrpc.NewServerHandler(s.tracer)))
 	api.RegisterDialogsServer(s.grpcServer, s)
+	apiv2.RegisterDialogsServer(s.grpcServer, s.v2)
 
 	lsn, err := net.Listen("tcp", s.addr)
 	if err != nil {
@@ -62,6 +74,23 @@ func (s *Dialogs) Dialogs(ctx context.Context, _ *emptypb.Empty) (*api.DialogsRe
 	resp := api.DialogsResponse{}
 	for _, dialog := range dialogs {
 		resp.Dialogs = append(resp.Dialogs, &api.Dialog{
+			Id:        dialog.ID,
+			CreatorId: dialog.Creator.Id,
+			Name:      dialog.Name,
+		})
+	}
+	return &resp, nil
+}
+
+func (s *DialogsV2) Dialogs(ctx context.Context, _ *emptypb.Empty) (*apiv2.DialogsResponse, error) {
+	dialogs, err := service.Dialogs(ctx)
+	if err != nil {
+		log.Err(err).Msgf("failed to get dialogs")
+		return nil, status.Errorf(codes.Internal, errInternalServerError)
+	}
+	resp := apiv2.DialogsResponse{}
+	for _, dialog := range dialogs {
+		resp.Dialogs = append(resp.Dialogs, &apiv2.Dialog{
 			Id:        dialog.ID,
 			CreatorId: dialog.Creator.Id,
 			Name:      dialog.Name,
