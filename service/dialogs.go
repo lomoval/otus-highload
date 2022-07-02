@@ -1,3 +1,6 @@
+//go:build dialogsservice
+// +build dialogsservice
+
 package service
 
 import (

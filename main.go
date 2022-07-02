@@ -53,6 +53,8 @@ func init() {
 	viper.BindEnv("TARANTOOL_SERVER_USER")
 	viper.BindEnv("TARANTOOL_SERVER_PASS")
 	viper.BindEnv("RABBIT_URL")
+	viper.BindEnv("DIALOGS_HOST")
+	viper.BindEnv("DIALOGS_PORT")
 
 	err := service.SetupTarantool(
 		viper.GetString("TARANTOOL_SERVER"),
@@ -131,6 +133,11 @@ func init() {
 		})
 	go globalSessions.GC()
 
+	err = service.SetupGrpcDialogs(viper.GetString("DIALOGS_HOST"), viper.GetInt("DIALOGS_PORT"))
+	if err != nil {
+		log.Err(err).Msgf("failed to init dialogs service")
+		os.Exit(1)
+	}
 	err = service.StartNewsProducer(viper.GetString("KAFKA_BOOTSTRAPS_SERVERS"))
 	if err != nil {
 		log.Err(err).Msgf("failed to init Kafka news producer")
