@@ -1,8 +1,6 @@
 FROM golang:1.16.2 as build
 
-ENV WAIT_VERSION 2.7.2
-ENV BIN_FILE /opt/dialogs
-ENV WAIT_FILE /opt/wait
+ENV BIN_FILE "/opt/dialogs"
 ENV CODE_DIR /go/src/
 
 WORKDIR ${CODE_DIR}
@@ -16,19 +14,6 @@ COPY . ${CODE_DIR}
 ARG LDFLAGS
 RUN CGO_ENABLED=1 go build --tags dialogsservice\
         -ldflags "$LDFLAGS" \
-        -o ${BIN_FILE} cmd/dialogs/*
+        -o ${BIN_FILE} cmd/dialogs/main.go
 
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait ${WAIT_FILE}
-RUN chmod +x ${WAIT_FILE}
-
-FROM alpine:3.9
-
-LABEL ORGANIZATION="OTUS Online Education"
-LABEL SERVICE="dialogs"
-
-ENV BIN_FILE "/opt/scheduler"
-ENV WAIT_FILE /opt/wait
-COPY --from=build ${BIN_FILE} ${BIN_FILE}
-COPY --from=build ${WAIT_FILE} ${WAIT_FILE}
-
-CMD ${WAIT_FILE} && ${BIN_FILE}
+CMD ${BIN_FILE}

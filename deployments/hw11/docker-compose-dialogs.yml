@@ -1,0 +1,74 @@
+version: '3.7'
+
+services:
+  hl-dialogs1:
+    image: hl-dialogs:latest
+    container_name: hl-dialogs1
+    environment:
+      OTUS_HIGHLOAD_DB_HOST: "192.168.2.4"
+      OTUS_HIGHLOAD_DB_NAME: db
+      OTUS_HIGHLOAD_DB_PASS: pass
+      OTUS_HIGHLOAD_DB_PORT: 4306
+      OTUS_HIGHLOAD_DIALOGS_HOST: "0.0.0.0"
+      OTUS_HIGHLOAD_DIALOGS_PORT: 8005
+        #      OTUS_HIGHLOAD_DB_SLAVES: 127.0.0.1:4400
+      OTUS_HIGHLOAD_DB_USER: user
+      OTUS_HIGHLOAD_KAFKA_BOOTSTRAPS_SERVERS: 127.0.0.1:29092
+      OTUS_HIGHLOAD_RABBIT_URL: "amqp://guest:guest@localhost:5672/"
+      OTUS_HIGHLOAD_TARANTOOL_SERVER1: 84.252.136.208:3301
+      OTUS_HIGHLOAD_TARANTOOL_SERVER_PASS1:
+      OTUS_HIGHLOAD_TARANTOOL_SERVER_USER1: guest
+      OTUS_HIGHLOAD_ZIPKIN_URL: http://localhost:9411/api/v2/spans
+    ports:
+      - "8005:8005"
+    networks:
+      - consul
+
+  hl-dialogs2:
+    image: hl-dialogs:latest
+    container_name: hl-dialogs2
+    environment:
+      OTUS_HIGHLOAD_DB_HOST: "192.168.2.4"
+      OTUS_HIGHLOAD_DB_NAME: db
+      OTUS_HIGHLOAD_DB_PASS: pass
+      OTUS_HIGHLOAD_DB_PORT: 4306
+      OTUS_HIGHLOAD_DIALOGS_HOST: "0.0.0.0"
+      OTUS_HIGHLOAD_DIALOGS_PORT: 8005
+      #      OTUS_HIGHLOAD_DB_SLAVES: 127.0.0.1:4400
+      OTUS_HIGHLOAD_DB_USER: user
+      OTUS_HIGHLOAD_KAFKA_BOOTSTRAPS_SERVERS: 127.0.0.1:29092
+      OTUS_HIGHLOAD_RABBIT_URL: "amqp://guest:guest@localhost:5672/"
+      OTUS_HIGHLOAD_TARANTOOL_SERVER1: 84.252.136.208:3301
+      OTUS_HIGHLOAD_TARANTOOL_SERVER_PASS1:
+      OTUS_HIGHLOAD_TARANTOOL_SERVER_USER1: guest
+      OTUS_HIGHLOAD_ZIPKIN_URL: http://localhost:9411/api/v2/spans
+    ports:
+      - "8006:8005"
+    networks:
+      - consul
+
+  hl-dialogs3:
+    image: hl-dialogs:latest
+    container_name: hl-dialogs3
+    environment:
+      OTUS_HIGHLOAD_DB_HOST: "192.168.2.4"
+      OTUS_HIGHLOAD_DB_NAME: db
+      OTUS_HIGHLOAD_DB_PASS: pass
+      OTUS_HIGHLOAD_DB_PORT: 4306
+      OTUS_HIGHLOAD_DIALOGS_HOST: "0.0.0.0"
+      OTUS_HIGHLOAD_DIALOGS_PORT: 8005
+      #      OTUS_HIGHLOAD_DB_SLAVES: 127.0.0.1:4400
+      OTUS_HIGHLOAD_DB_USER: user
+      OTUS_HIGHLOAD_KAFKA_BOOTSTRAPS_SERVERS: 127.0.0.1:29092
+      OTUS_HIGHLOAD_RABBIT_URL: "amqp://guest:guest@localhost:5672/"
+      OTUS_HIGHLOAD_TARANTOOL_SERVER1: 84.252.136.208:3301
+      OTUS_HIGHLOAD_TARANTOOL_SERVER_PASS1:
+      OTUS_HIGHLOAD_TARANTOOL_SERVER_USER1: guest
+      OTUS_HIGHLOAD_ZIPKIN_URL: http://localhost:9411/api/v2/spans
+    ports:
+      - "8007:8005"
+    networks:
+      - consul
+
+#networks:
+#  consul:
