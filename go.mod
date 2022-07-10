@@ -15,6 +15,7 @@ require (
 	github.com/hashicorp/consul/api v1.12.0
 	github.com/openzipkin/zipkin-go v0.4.0
 	github.com/rs/zerolog v1.26.1
+	github.com/simplesurance/grpcconsulresolver v1.3.0
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/viper v1.10.1
 	github.com/streadway/amqp v1.0.0

@@ -60,6 +60,7 @@ func init() {
 	viper.BindEnv("DIALOGS_HOST")
 	viper.BindEnv("DIALOGS_PORT")
 	viper.BindEnv("ZIPKIN_URL")
+	viper.BindEnv("CONSUL_DIALOGS_URI")
 
 	err := service.SetupTarantool(
 		viper.GetString("TARANTOOL_SERVER"),
@@ -144,7 +145,7 @@ func init() {
 		log.Err(err).Msgf("failed to init zipkin")
 		os.Exit(1)
 	}
-	err = service.SetupGrpcDialogs(viper.GetString("DIALOGS_HOST"), viper.GetInt("DIALOGS_PORT"), zipkinTracer)
+	err = service.SetupGrpcDialogs(viper.GetString("CONSUL_DIALOGS_URI"), zipkinTracer)
 	if err != nil {
 		log.Err(err).Msgf("failed to init dialogs service")
 		os.Exit(1)

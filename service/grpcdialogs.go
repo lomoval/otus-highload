@@ -11,11 +11,12 @@ import (
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/openzipkin/zipkin-go"
 	zipkingrpc "github.com/openzipkin/zipkin-go/middleware/grpc"
+
+	"github.com/simplesurance/grpcconsulresolver/consul"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/resolver"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"net"
-	"strconv"
 )
 
 var (
@@ -23,10 +24,14 @@ var (
 	grpcDialogsClient api.DialogsClient
 )
 
-func SetupGrpcDialogs(host string, port int, tracer *zipkin.Tracer) error {
+func SetupGrpcDialogs(consulDialogsUri string, tracer *zipkin.Tracer) error {
+	resolver.Register(consul.NewBuilder())
 	var err error
+
+	const grpcServiceConfig = `{"loadBalancingPolicy":"round_robin"}`
 	grpcDialogsConn, err = grpc.Dial(
-		net.JoinHostPort(host, strconv.Itoa(port)),
+		consulDialogsUri,
+		grpc.WithDefaultServiceConfig(grpcServiceConfig),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithStatsHandler(zipkingrpc.NewClientHandler(tracer)),
 	)
