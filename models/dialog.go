@@ -7,6 +7,7 @@ type Dialog struct {
 }
 
 type DialogAnswer struct {
-	ID   int64
-	Text string
+	ID      int64
+	Creator User
+	Text    string
 }
