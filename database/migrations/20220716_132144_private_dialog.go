@@ -35,6 +35,7 @@ func (m *PrivateDialog_20220716_132144) Up() {
 		create_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 		creator_id BIGINT NOT NULL,
 		text varchar(4000) NOT NULL,
+    processed tinyint(1) DEFAULT NULL,
 		CONSTRAINT private_dialog_answer_FK FOREIGN KEY (creator_id) REFERENCES db.user(id) ON DELETE CASCADE,
 		CONSTRAINT private_dialog_answer_FK_1 FOREIGN KEY (dialog_id) REFERENCES private_dialog (id) ON DELETE CASCADE`)
 }
