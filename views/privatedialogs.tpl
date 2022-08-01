@@ -29,12 +29,15 @@
         <tr>
           <th>Id</th>
           <th><b>User</b></th>
+          <th><b>NewAnswer</b></th>
           <th></th>
           <th></th>
-        {{range $dialog := .Dialogs}}
+          {{$counters := .DialogsCounters}}
+          {{range $dialog := .Dialogs}}
         <tr>
           <td>{{$dialog.ID}}</td>
           <td style="width:65%;">{{$dialog.Creator.Profile.Name}} {{$dialog.Creator.Profile.Surname}}</td>
+          <td style="width:5%;">{{index $counters ($dialog.ID)}}</td>
           <td><a href="privatedialogs/{{$dialog.ID}}">Answers</a></td>
         </tr>
         {{end}}

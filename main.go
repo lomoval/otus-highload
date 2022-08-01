@@ -1,4 +1,4 @@
-//go:generate -command PROTOC protoc -I./api/proto ./api/proto/dialog.proto ./api/proto/dialog-service.proto
+//go:generate -command PROTOC protoc -I./api/proto ./api/proto/dialog.proto ./api/proto/dialog-service.proto ./api/proto/counter-service.proto
 //go:generate PROTOC --go_out=./api/ --go-grpc_out=./api/
 // :generate PROTOC --grpc-gateway_out ../../../api/ --grpc-gateway_opt logtostderr=true --grpc-gateway_opt paths=source_relative --grpc-gateway_opt generate_unbound_methods=true
 
@@ -61,6 +61,8 @@ func init() {
 	viper.BindEnv("DIALOGS_PORT")
 	viper.BindEnv("ZIPKIN_URL")
 	viper.BindEnv("CONSUL_DIALOGS_URI")
+	viper.BindEnv("COUNTERS_HOST")
+	viper.BindEnv("COUNTERS_PORT")
 
 	err := service.SetupTarantool(
 		viper.GetString("TARANTOOL_SERVER"),
@@ -165,13 +167,32 @@ func init() {
 		log.Err(err).Msgf("failed to init Rabbit news consumer")
 		os.Exit(1)
 	}
+
+	err = service.SetupGrpcCounters(viper.GetString("COUNTERS_HOST") + ":" + viper.GetString("COUNTERS_PORT"))
+	if err != nil {
+		log.Err(err).Msgf("failed to init dialogs service")
+		os.Exit(1)
+	}
+
+	err = service.StartPrivateMessageProducer(viper.GetString("KAFKA_BOOTSTRAPS_SERVERS"))
+	if err != nil {
+		log.Err(err).Msgf("failed to init Kafka news producer")
+		os.Exit(1)
+	}
+	err = service.StartPrivateMessageConfirmationConsumer(viper.GetString("KAFKA_BOOTSTRAPS_SERVERS"))
+	if err != nil {
+		log.Err(err).Msgf("failed to init Kafka news consumer")
+		os.Exit(1)
+	}
+
 }
 
 func main() {
-	defer service.StopNewsProducer()
+	defer service.StopProducers()
 	defer service.ShutdownTarantool()
 	defer service.StopRabbit()
 	defer service.StopGrpcDialogs()
+	defer service.StopGrpcCounter()
 
 	var FilterUser = func(ctx *context.Context) {
 		if strings.HasPrefix(ctx.Input.URL(), "/login") {

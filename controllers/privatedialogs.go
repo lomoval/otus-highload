@@ -18,8 +18,14 @@ func (c *DialogController) PrivateDialogs() {
 		log.Err(err).Msgf("failed to get dialogs")
 		c.AbortInternalError()
 	}
+	counters, _ := service.DialogsCounters(c.ReqCtx(), c.user().Id)
+
+	for _, dialog := range dialogs {
+		dialog.Count = counters[dialog.ID]
+	}
 
 	c.Data["Dialogs"] = dialogs
+	c.Data["DialogsCounters"] = counters
 	c.TplName = "privatedialogs.tpl"
 }
 
@@ -53,6 +59,8 @@ func (c *DialogController) PrivateDialogAnswers(id int64) {
 		log.Err(err).Msgf("failed to get dialog '%d' answers", id)
 		c.AbortInternalError()
 	}
+
+	service.ResetDialogCounter(c.ReqCtx(), id, c.user().Id)
 
 	c.Data["Dialog"] = dialog
 	c.Data["Answers"] = answers

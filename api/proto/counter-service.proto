@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package counter;
+
+option go_package = "./;api";
+
+service Counter {
+ rpc PrivateDialogsCounters(PrivateDialogsCountersRequest) returns (PrivateDialogsCountersResponse){};
+ rpc ResetPrivateDialogCounter(ResetPrivateDialogCounterRequest) returns (google.protobuf.Empty){};
+}
+
+message PrivateDialogsCountersRequest {
+ int64 userId = 2;
+}
+
+message PrivateDialogsCountersResponse {
+ map<int64, int32> dialogs = 1;
+}
+
+message ResetPrivateDialogCounterRequest {
+ int64 dialogId = 1;
+ int64 ownerId = 2;
+}
