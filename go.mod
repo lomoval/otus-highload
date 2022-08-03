@@ -14,6 +14,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/hashicorp/consul/api v1.12.0
 	github.com/openzipkin/zipkin-go v0.4.0
+	github.com/prometheus/client_golang v1.12.2 // indirect
 	github.com/rs/zerolog v1.26.1
 	github.com/simplesurance/grpcconsulresolver v1.3.0
 	github.com/smartystreets/goconvey v1.6.4

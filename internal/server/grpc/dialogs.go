@@ -8,6 +8,7 @@ import (
 	"github.com/openzipkin/zipkin-go"
 	zipkingrpc "github.com/openzipkin/zipkin-go/middleware/grpc"
 	"github.com/openzipkin/zipkin-go/reporter/http"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -39,16 +40,24 @@ type DialogsV2 struct {
 }
 
 func NewServer(host string, port int, zipkinUrl string) *Dialogs {
+	prometheus.MustRegister(latency, requestRate)
 	return &Dialogs{addr: net.JoinHostPort(host, strconv.Itoa(port)), zipkinUrl: zipkinUrl,
 		v2: &DialogsV2{addr: net.JoinHostPort(host, strconv.Itoa(port)), zipkinUrl: zipkinUrl}}
+}
+
+func withServerUnaryInterceptor() grpc.ServerOption {
+	return grpc.UnaryInterceptor(serverLoggingMetricsInterceptor)
 }
 
 func (s *Dialogs) Start(_ context.Context) error {
 	reporter := http.NewReporter(s.zipkinUrl)
 	s.tracer, _ = zipkin.NewTracer(reporter)
-	s.grpcServer = grpc.NewServer(grpc.UnaryInterceptor(loggingHandler), grpc.StatsHandler(zipkingrpc.NewServerHandler(s.tracer)))
+	s.grpcServer = grpc.NewServer(
+		withServerUnaryInterceptor(),
+		grpc.StatsHandler(zipkingrpc.NewServerHandler(s.tracer)),
+	)
 	api.RegisterDialogsServer(s.grpcServer, s)
-	apiv2.RegisterDialogsServer(s.grpcServer, s.v2)
+	// apiv2.RegisterDialogsServer(s.grpcServer, s.v2)
 
 	lsn, err := net.Listen("tcp", s.addr)
 	if err != nil {

@@ -5,12 +5,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/beego/beego/v2/client/orm"
-	consul "github.com/hashicorp/consul/api"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
+	"net/http"
 	"os/signal"
 	"strconv"
 	"syscall"
-	"time"
 )
 
 var (
@@ -60,42 +60,48 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	defer cancel()
 
-	cfg := consul.DefaultConfig()
-	cfg.Address = viper.GetString("CONSUL_ADDRESS")
-	c, err := consul.NewClient(cfg)
-	if err != nil {
-		panic(err.Error())
-	}
-	consulAgent := c.Agent()
-	serviceDef := &consul.AgentServiceRegistration{
-		ID:      dialogServerConsulId,
-		Name:    serviceName,
-		Port:    viper.GetInt("DIALOGS_CONSUL_PORT"),
-		Address: viper.GetString("DIALOGS_CONSUL_HOST"),
-		Check: &consul.AgentServiceCheck{
-			TTL: (10 * time.Second).String(),
-		},
-	}
+	// cfg := consul.DefaultConfig()
+	// cfg.Address = viper.GetString("CONSUL_ADDRESS")
+	// c, err := consul.NewClient(cfg)
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
+	// consulAgent := c.Agent()
+	// serviceDef := &consul.AgentServiceRegistration{
+	// 	ID:      dialogServerConsulId,
+	// 	Name:    serviceName,
+	// 	Port:    viper.GetInt("DIALOGS_CONSUL_PORT"),
+	// 	Address: viper.GetString("DIALOGS_CONSUL_HOST"),
+	// 	Check: &consul.AgentServiceCheck{
+	// 		TTL: (10 * time.Second).String(),
+	// 	},
+	// }
+	//
+	// if err := consulAgent.ServiceRegister(serviceDef); err != nil {
+	// 	panic(err.Error())
+	// }
 
-	if err := consulAgent.ServiceRegister(serviceDef); err != nil {
-		panic(err.Error())
-	}
-
-	go func() {
-		t := time.NewTicker(5 * time.Second)
-		for {
-			select {
-			case <-t.C:
-				consulAgent.UpdateTTL("service:dialogs"+strconv.Itoa(viper.GetInt("DIALOGS_PORT")), "", "pass")
-			case <-ctx.Done():
-				return
-			}
-		}
-	}()
+	// go func() {
+	// 	t := time.NewTicker(5 * time.Second)
+	// 	for {
+	// 		select {
+	// 		case <-t.C:
+	// 			consulAgent.UpdateTTL("service:dialogs"+strconv.Itoa(viper.GetInt("DIALOGS_PORT")), "", "pass")
+	// 		case <-ctx.Done():
+	// 			return
+	// 		}
+	// 	}
+	// }()
 
 	go func() {
 		<-ctx.Done()
 		server.Stop()
 	}()
+
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		http.ListenAndServe(":2112", nil)
+	}()
+
 	server.Start(context.Background())
 }
