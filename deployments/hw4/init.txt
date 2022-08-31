@@ -1,0 +1,10 @@
+INSERT INTO mysql_query_rules (rule_id,active,match_pattern,destination_hostgroup,apply) VALUES (1,1,"\/\*\s*dialog_shard=1\s*\*.",1,1);
+INSERT INTO mysql_query_rules (rule_id,active,match_pattern,destination_hostgroup,apply) VALUES (2,1,"\/\*\s*dialog_shard=2\s*\*.",2,1);
+LOAD MYSQL QUERY RULES TO RUNTIME;
+SAVE MYSQL QUERY RULES TO DISK;
+
+SET mysql-eventslog_filename='queries.log';
+SET mysql-eventslog_default_log=1;
+SET mysql-eventslog_format=2;
+LOAD MYSQL VARIABLES TO RUNTIME;
+SAVE MYSQL VARIABLES TO DISK;
