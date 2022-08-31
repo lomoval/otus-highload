@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"github.com/beego/beego/v2/client/orm"
+	"strconv"
 )
 
 func Dialogs(_ context.Context) ([]models.Dialog, error) {
@@ -60,7 +61,9 @@ func DialogAnswers(_ context.Context, dialogID int64) ([]models.DialogAnswer, er
 
 	var ids []int64
 	var texts []string
-	_, err := o.Raw("SELECT id as \"AD\", text FROM dialog_answer WHERE dialog_id=? ORDER BY create_timestamp ASC;", dialogID).
+	_, err := o.Raw(
+		dialogShardComment(dialogID)+
+			" SELECT id as \"AD\", text FROM dialog_answer WHERE dialog_id=? ORDER BY create_timestamp ASC;", dialogID).
 		QueryRows(&ids, &texts)
 
 	answers := make([]models.DialogAnswer, 0, len(ids))
@@ -79,7 +82,13 @@ func DialogAnswers(_ context.Context, dialogID int64) ([]models.DialogAnswer, er
 }
 
 func AddDialogAnswer(_ context.Context, dialogID int64, creatorID int64, text string) error {
-	_, err := orm.NewOrm().Raw("INSERT INTO dialog_answer(dialog_id, creator_id, text) VALUES(?, ?, ?) ",
+	_, err := orm.NewOrm().Raw(
+		dialogShardComment(dialogID)+
+			" INSERT INTO dialog_answer(dialog_id, creator_id, text) VALUES(?, ?, ?) ",
 		dialogID, creatorID, text).Exec()
 	return err
+}
+
+func dialogShardComment(dialogID int64) string {
+	return "/* dialog_shard=" + strconv.Itoa(int(dialogID%3)) + " */"
 }
